@@ -13,6 +13,14 @@ const AppWrapper = styled.div`
   align-items: center;
 `;
 
+const NodesWrapper = styled.div`
+  margin: 8px;
+  border: 1px solid black;
+  background-color: #f4f4f4;
+  height: 50vh;
+  width: 100%;
+`;
+
 const App = () => {
   const [selectedItem, setSelectedItem] = useState("0");
   const [showModal, setShowModal] = useState(false);
@@ -113,9 +121,9 @@ const App = () => {
       <h1>Flow Controler</h1>
       <Select select={selectedItem} onChange={(e) => handleSelectFlowId(e)} />
       <Table selected={selectedItem} onClick={(e) => openModal(e)} />
-      <div style={{ height: "50vh", width: "100%" }}>
+      <NodesWrapper>
         <ReactFlow elements={reactFlowProcess} />
-      </div>
+      </NodesWrapper>
     </AppWrapper>
   );
 };
