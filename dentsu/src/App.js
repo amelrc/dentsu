@@ -1,17 +1,26 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import useFetch from "./hooks/useFetch";
+import Select from "./components/select";
+import Modal from "./components/modal";
+import Table from "./components/table";
+
+const AppWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const App = () => {
   const [selectedItem, setSelectedItem] = useState("0");
+  const [showModal, setShowModal] = useState(false);
   const [detail, setDetail] = useState([]);
+  const [modalInfo, setModalInfo] = useState();
 
-  const flowType = useFetch(
-    "https://orchestrationflowapp.azurewebsites.net/flow"
-  );
-  const flowProcess = useFetch(
-    `https://orchestrationflowapp.azurewebsites.net/flow/${selectedItem}`
-  );
+  // const flowProcess = useFetch(
+  //   `https://orchestrationflowapp.azurewebsites.net/flow/${selectedItem}`
+  // );
 
   useEffect(() => {
     switch (selectedItem) {
@@ -46,56 +55,37 @@ const App = () => {
     return arr;
   };
 
-  const minmax = (arrayOfObjects, someKey) => {
-    const values = arrayOfObjects.map((value) => value[someKey]);
-    return {
-      min: Math.min.apply(null, values),
-      max: Math.max.apply(null, values),
-    };
+  // const minmax = (arrayOfObjects, someKey) => {
+  //   const values = arrayOfObjects.map((value) => value[someKey]);
+  //   console.log("alkdjfhalkdjhf", values);
+  //   return {
+  //     min: Math.min(...values),
+  //     max: Math.max(...values),
+  //   };
+  // };
+
+  const openModal = (e) => {
+    setModalInfo(e.target.innerHTML);
+    setShowModal((prev) => !prev);
   };
 
-  console.log("hello", minmax(detail, "avgDuration"));
-
   return (
-    <div className="App">
+    <AppWrapper>
+      <Modal showModal={showModal} setShowModal={setShowModal}>
+        {detail.map((item) =>
+          item.id === parseInt(modalInfo) ? (
+            <div style={{ backgroundColor: "white", padding: "20% 16%" }}>
+              <h2>{item.name}</h2>
+              <p>{item.description}</p>
+            </div>
+          ) : null
+        )}
+      </Modal>
+
       <h1>Flow Controler</h1>
-      <div>
-        <label htmlFor="flow-select">Select Flow</label>
-        <select
-          value={selectedItem}
-          onChange={(e) => handleSelectFlowId(e)}
-          id="flow-select"
-        >
-          <option>Select Flow</option>
-          {flowType.map((el) => (
-            <option key={el.id} value={el.id}>
-              {el.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Process</th>
-            </tr>
-            <tr>
-              <td>From</td>
-              <td>To</td>
-            </tr>
-          </thead>
-          <tbody>
-            {flowProcess.map((col, i) => (
-              <tr key={i}>
-                <td>{col.fromProcessId}</td>
-                <td>{col.toProcessId}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <Select select={selectedItem} onChange={(e) => handleSelectFlowId(e)} />
+      <Table selected={selectedItem} onClick={(e) => openModal(e)} />
+    </AppWrapper>
   );
 };
 export default App;
