@@ -74,11 +74,13 @@ const App = () => {
     setFlow(flowProcess);
   }, [selectedItem, flowProcess]);
 
+  console.log(selectedItem);
+
   const nodes = [];
   const conectors = [];
   flow.map((item, i) =>
     nodes.push({
-      id: i + "",
+      id: i + 1 + "",
       data: { label: `${i + 1}` },
       position: { x: (i + 1) * 100, y: (i + 1) * 100 },
     })
@@ -92,6 +94,8 @@ const App = () => {
   );
 
   const reactFlowProcess = nodes.concat(conectors);
+
+  console.log(reactFlowProcess);
 
   return (
     <AppWrapper>

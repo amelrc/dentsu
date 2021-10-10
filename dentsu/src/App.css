@@ -22,4 +22,8 @@ tr {
 td {
   width: 100%;
   text-align: center;
+  cursor: pointer;
+}
+td:hover {
+  background-color: #ccc;
 }
