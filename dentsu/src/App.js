@@ -1,10 +1,11 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import ReactFlow from "react-flow-renderer";
 import styled from "styled-components";
-import useFetch from "./hooks/useFetch";
 import Select from "./components/select";
 import Modal from "./components/modal";
 import Table from "./components/table";
+import useFetch from "./hooks/useFetch";
 
 const AppWrapper = styled.div`
   display: flex;
@@ -17,10 +18,7 @@ const App = () => {
   const [showModal, setShowModal] = useState(false);
   const [detail, setDetail] = useState([]);
   const [modalInfo, setModalInfo] = useState();
-
-  // const flowProcess = useFetch(
-  //   `https://orchestrationflowapp.azurewebsites.net/flow/${selectedItem}`
-  // );
+  const [flow, setFlow] = useState([]);
 
   useEffect(() => {
     switch (selectedItem) {
@@ -69,6 +67,32 @@ const App = () => {
     setShowModal((prev) => !prev);
   };
 
+  const flowProcess = useFetch(
+    `https://orchestrationflowapp.azurewebsites.net/flow/${selectedItem}`
+  );
+  useEffect(() => {
+    setFlow(flowProcess);
+  }, [selectedItem, flowProcess]);
+
+  const nodes = [];
+  const conectors = [];
+  flow.map((item, i) =>
+    nodes.push({
+      id: i + "",
+      data: { label: `${i + 1}` },
+      position: { x: (i + 1) * 100, y: (i + 1) * 100 },
+    })
+  );
+  flow.map((item, i) =>
+    conectors.push({
+      id: i + "connector",
+      source: item.fromProcessId + "",
+      target: item.toProcessId + "",
+    })
+  );
+
+  const reactFlowProcess = nodes.concat(conectors);
+
   return (
     <AppWrapper>
       <Modal showModal={showModal} setShowModal={setShowModal}>
@@ -85,6 +109,9 @@ const App = () => {
       <h1>Flow Controler</h1>
       <Select select={selectedItem} onChange={(e) => handleSelectFlowId(e)} />
       <Table selected={selectedItem} onClick={(e) => openModal(e)} />
+      <div style={{ height: "50vh", width: "100%" }}>
+        <ReactFlow elements={reactFlowProcess} />
+      </div>
     </AppWrapper>
   );
 };
